@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation=" 
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+	<!-- ========================= BUSINESS OBJECT DEFINITIONS ========================= -->
+	<!-- Scan all class with @Repository, @Service, and @Component -->
+	<!-- (beware that this does not enable mapper scanning!) -->
+	<context:property-placeholder location="classpath:*.properties" />
+
+	<context:component-scan base-package="com.myproject.parking.lib.service" />
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="parking" />
+	</bean>
+
+	<bean id="versionData" class="com.myproject.parking.trx.data.VersionData"
+		init-method="printInfo" />
+
+	<bean id="notifEmailSender" class="com.myproject.parking.lib.utils.EmailSender">
+		<property name="smtpHost" value="${smtpHost}" />
+		<property name="smtpPort" value="${smtpPort}" />
+		<property name="smtpUserName" value="${smtpUserName}" />
+		<property name="smtpPassword" value="${smtpPassword}" />
+		<property name="useTLS" value="${useTLS}" />
+		<property name="useSSL" value="${useSSL}" />
+		<property name="defaultFrom" value="${defaultFrom}" />
+		<!-- <property name="htmlTemplate" value="${htmlTemplate.data}" /> -->
+	</bean>
+
+
+
+	<bean id="httpClientService" class="com.myproject.parking.lib.service.HttpClientService"
+		init-method="start">
+		<property name="serverKey" value="${serverKey}" />
+		<property name="urlMidtrans" value="${urlMidtrans}" />
+		<property name="baseurlMidtransAPI" value="${baseurlMidtransAPI}" />
+	</bean>
+
+	<bean id="transactionLogFacade" class="com.myproject.parking.lib.log.TransactionLogFacade" />
+	<bean id="transactionNotifLogFacade" class="com.myproject.parking.lib.log.TransactionNotifLogFacade" />
+
+	<bean id="databaseAsyncUtil" class="com.myproject.parking.lib.utils.DatabaseAsyncUtil"
+		init-method="start" destroy-method="stop" />
+
+	<bean id="logicFactory" class="com.myproject.parking.trx.logic.LogicFactory">
+		<property name="logic">
+			<map>
+
+				<entry key="/password" value-ref="pass"></entry>
+				<!-- Mobico -->
+				<entry key="/loginUser" value-ref="loginUser"></entry>
+
+				<entry key="/submitData" value-ref="SubmitData"></entry>
+
+				<entry key="/getMessage" value-ref="GetMessage"></entry>
+				<entry key="/submitMessage" value-ref="SubmitMessage"></entry>
+
+				<entry key="/getListBank" value-ref="ListBankAndApp"></entry>
+
+				<entry key="/taskMember" value-ref="TaskMember"></entry>
+				
+				<entry key="/taskInfo" value-ref="TaskInfo"></entry>
+
+			</map>
+		</property>
+	</bean>
+
+	<!-- =========================== Scheduler Release Booking Non Payment =========================== -->
+
+	<!-- <bean id="autoReleaseBookingService" class="com.myproject.parking.lib.service.scheduler.AutoReleaseBookingService" 
+		init-method="release" /> -->
+
+	<!-- <bean id="autoReleaseBookingJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> 
+		<property name="targetObject" ref="autoReleaseBookingService" /> <property 
+		name="targetMethod" value="release" /> <property name="concurrent" value="false" 
+		/> </bean> <bean id="autoReleaseBookingTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean"> 
+		<property name="jobDetail" ref="autoReleaseBookingJob" /> <property name="cronExpression" 
+		value=" 0 0/15 * * * ? " /> </bean> -->
+
+	<!-- =========================== Scheduler =========================== -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<!-- <ref bean="autoReleaseBookingTrigger" /> -->
+			</list>
+		</property>
+	</bean>
+
+</beans>

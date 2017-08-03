@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    Copyright 2010 The myBatis Team
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<mapper namespace="com.myproject.parking.lib.mapper.SubmitDataMapper">
+      
+    <!--  mobico -->
+     <insert id="insertToDb" parameterType="SubmitDataVO" useGeneratedKeys="true" keyProperty="id">
+    	insert into tbl_app_issue(issue_number, bankId, appId, bank_name, task_name, task_desc, img_path,created_by)
+    		values(#{issueNumber}, #{bankId},#{appId},#{bankName},#{taskName}, #{taskDesc}, #{imgPath},#{userId})  	
+     </insert>
+     
+     
+     <select id="findIssueByAppId" parameterType="java.util.Map" resultType="SubmitDataVO">
+         select 
+         <include refid="_sqlAppIssue"/>
+         from tbl_app_issue 
+         	where appId = #{appId}      
+     </select>
+     
+     <select id="findIssueByIssueNumber" parameterType="java.util.Map" resultType="SubmitDataVO">
+         select 
+         <include refid="_sqlAppIssue"/>
+         from tbl_app_issue 
+         	where issue_number = #{issueNumber}      
+     </select>
+      
+      <select id="findAppById" parameterType="java.util.Map" resultType="AppMasterVO">
+         select 
+         <include refid="_sqlAppMaster"/>
+         from tbl_application_master 
+         	where id = #{appId}      
+     </select>
+
+	<select id="findUsrRefByAppId" parameterType="java.util.Map"
+		resultType="UserRefVO">
+		select *
+		from tbl_userref 
+		where appId = #{appId}
+	</select>
+	
+	<select id="findUsrRefByUserId" parameterType="java.util.Map"
+		resultType="UserRefVO">
+		select *
+		from tbl_userref 
+		where userId = #{userId}
+	</select>
+	
+	<select id="findUsrRefAllByAppId" parameterType="java.util.Map"
+		resultType="listMemberVO">
+		select 
+		b.description as jobName,
+		c.name as name
+		from tbl_userref a
+		join tbl_job_master b
+		on a.jobId=b.id
+		join tbl_user c
+		on a.userId = c.userId
+		where a.appId = #{appId}
+	</select>
+
+
+	<select id="findTaskInfoByAppUd" parameterType="java.util.Map"
+		resultType="TaskInfoVO">
+		select b.bank_logo as bankLogo,
+		b.bank_name as bankName,
+		c.application_name as appName
+		from tbl_userref a
+		right join tbl_bank_master b
+		on a.bankId=b.Id
+		join tbl_application_master c
+		on a.appId = c.Id
+		where a.appId = #{appId}
+		limit 1
+	</select>
+
+     <sql id="_sqlAppIssue">
+    	issue_number as issueNumber,
+    	bankId,
+    	appId,
+    	bank_name as bankName,
+    	task_name as taskName,
+    	task_desc as taskDesc, 
+    	img_path as imgPath, 
+    	status,
+    	created_by as createdBy
+    </sql>
+    
+     <sql id="_sqlAppMaster">
+    	bankId,
+    	application_name as appName,
+    	application_detail as appDetail
+    </sql>
+    
+    <select id="countUsrRefByUserIdAndJobId" parameterType="SubmitDataVO" resultType="java.lang.Integer">        
+        select count(*)
+        from tbl_userref
+        where userId = #{userId}
+        and jobId = 1
+    </select>
+    
+     <update id="updateStatus" parameterType="java.util.Map">
+    	UPDATE tbl_app_issue SET status = #{status} WHERE issue_number = #{issueNumber} 	
+     </update>
+     
+</mapper>

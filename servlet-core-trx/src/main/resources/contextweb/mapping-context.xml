@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+	<!-- Generate password -->
+	<bean id="pass" class="com.emobile.projectx.logic.ProjectxPostAndSubmit" />
+	<!-- projectx -->
+
+	<bean id="loginUser" class="com.emobile.projectx.logic.LoginUser" />
+
+	<bean id="SubmitData" class="com.emobile.projectx.logic.SubmitData" />
+
+	<bean id="GetMessage" class="com.emobile.projectx.logic.GetMessage" />
+	
+	<bean id="SubmitMessage" class="com.emobile.projectx.logic.SubmitMessage" />
+
+	<bean id="ListBankAndApp" class="com.emobile.projectx.logic.GetListBankAndApp" />
+
+	<bean id="TaskMember" class="com.emobile.projectx.logic.TaskMember" />
+
+	<bean id="TaskInfo" class="com.emobile.projectx.logic.TaskInfo" />
+
+</beans>
